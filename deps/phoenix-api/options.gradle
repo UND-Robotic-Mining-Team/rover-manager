@@ -1,5 +1,0 @@
-ext.FRCToolChainYear = 2019
-ext.phoenixGroup = "com.ctre.phoenix"
-ext.phoenixZipBase = "_GROUP_com_ctre_phoenix_ID"
-ext.niLibVersion = "2019+"
-ext.frcToolchainPrefix = "arm-frc2019-linux-gnueabi-"

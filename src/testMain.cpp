@@ -1,10 +1,11 @@
 
 #include "server.h"
 
+#ifdef _TESTMAIN
 int main(int argc, char **argv){
 	
   int sockfd, newsockfd, num = 0, num2 = 0;
-  float distance = 10.0;
+  char* distance = "10.0";
   char buffer[256];
   connect(&sockfd, &newsockfd);
   clientConnect(&sockfd, &newsockfd);
@@ -20,3 +21,5 @@ int main(int argc, char **argv){
       printf("Controller: %s\n\n", buffer);
   }
 }
+#endif
+
