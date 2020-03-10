@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage -fstack-protector-all --param=ssp-buffer-size=4")
 endif()
 
 option(PISTACHE_BUILD_TESTS "build tests alongside the project" OFF)
@@ -21,6 +21,11 @@ option(PISTACHE_BUILD_DOCS "build docs alongside the project" OFF)
 option(PISTACHE_INSTALL "add pistache as install target (recommended)" ON)
 option(PISTACHE_USE_SSL "add support for SSL server" OFF)
 
+# require fat LTO objects in static library
+if(CMAKE_CXX_FLAGS MATCHES "-flto")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffat-lto-objects")
+endif()
+
 if (PISTACHE_BUILD_TESTS)
     find_program(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
     find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
@@ -29,10 +34,12 @@ if (PISTACHE_BUILD_TESTS)
     if (CMAKE_CXX_CPPCHECK)
         message("-- Cppcheck found " ${CMAKE_CXX_CPPCHECK})
         list(
-            APPEND CMAKE_CXX_CPPCHECK 
+            APPEND CMAKE_CXX_CPPCHECK
                 "--enable=all"
+                "-DCPPCHECK"
                 "--suppress=*:${PROJECT_SOURCE_DIR}/third-party*"
                 "--suppress=*:${PROJECT_SOURCE_DIR}/tests*"
+                "--suppress=noExplicitConstructor:include/pistache/optional.h"
         )
     else()
         message("-- Cppcheck not found")
@@ -45,35 +52,16 @@ if (PISTACHE_BUILD_TESTS)
     add_custom_target(coverage COMMAND ${CMAKE_CTEST_COMMAND}  --force-new-ctest-process --test-action coverage)
 endif()
 
-# CMAKE version less than 3.8 does not understand the CMAKE_CXX_FLAGS
-# set to 17, so a manual check if performed on older version
-if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
-    include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
-    if(COMPILER_SUPPORTS_CXX17)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-    else()
-        set(CMAKE_CXX_STANDARD 14)
-    endif()
-else()
-    # Clang exports C++17 in std::experimental namespace (tested on Clang 5 and 6).
-    # This gives an error on date.h external library.
-    # Following workaround forces Clang to compile at best with C++14
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(CMAKE_CXX_STANDARD 14)
-    elseif (CMAKE_COMPILER_IS_GNUCC)
-        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0)
-            set(CMAKE_CXX_STANDARD 17)
-        else()
-            set(CMAKE_CXX_STANDARD 14)
-        endif()
-    else()
-        set(CMAKE_CXX_STANDARD 17)
-    endif()
-endif()
+# CMAKE Pin cxx compiler to CXX14 until update to CXX17
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 if (PISTACHE_USE_SSL)
     add_definitions(-DPISTACHE_USE_SSL)
@@ -217,7 +205,7 @@ endif()
 
     # Set filename...
     set(CPACK_SOURCE_PACKAGE_FILE_NAME
-        "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-git${VERSION_GIT_DATE}")
+        "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 
     # Don't include these files in the archive...
     set(CPACK_SOURCE_IGNORE_FILES
