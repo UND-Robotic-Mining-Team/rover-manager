@@ -10,7 +10,8 @@ solution "rover-manager"
 
    includedirs {
       "../include",
-      "../deps/phoenix-example/include"
+      "../deps/phoenix-example/include",
+      "../deps/pistache/include"
    }
 
    project "rover-manager"
@@ -22,15 +23,15 @@ solution "rover-manager"
       configuration "Debug"
          defines { "DEBUG" }
          flags { "Symbols" }
-	 libdirs{ "../deps/phoenix-example/lib/x86-64" }
-	 links { "CTRE_Phoenix", "CTRE_PhoenixCCI", "CTRE_PhoenixCanutils", "CTRE_PhoenixPlatformLinuxSocketCan", "SDL2", "pthread" }
+	 libdirs{ "../deps/phoenix-example/lib/x86-64", "../deps/pistache/prefix/lib" }
+	 links { "CTRE_Phoenix", "CTRE_PhoenixCCI", "CTRE_PhoenixCanutils", "CTRE_PhoenixPlatformLinuxSocketCan", "pistache", "SDL2", "pthread" }
          targetdir "../build/x86"
 
       configuration "Release"
          defines { "NDEBUG" }
          flags { "Optimize" }
 	 linkoptions { "-Bstatic" }
-	 libdirs{ "../deps/phoenix-example/lib/jetsontx" }
-	 links { "CTRE_Phoenix", "CTRE_PhoenixCCI", "CTRE_PhoenixCanutils", "CTRE_PhoenixPlatformLinuxSocketCan", "SDL2", "pthread" }
+	 libdirs{ "../deps/phoenix-example/lib/jetsontx", "../deps/pistache/prefix/lib" }
+	 links { "CTRE_Phoenix", "CTRE_PhoenixCCI", "CTRE_PhoenixCanutils", "CTRE_PhoenixPlatformLinuxSocketCan", "pistache", "SDL2", "pthread" }
          targetdir "../build/jetson"
 

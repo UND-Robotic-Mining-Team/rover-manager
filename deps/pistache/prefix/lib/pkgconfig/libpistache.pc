@@ -1,0 +1,14 @@
+prefix=/home/bmueller/Workspace/rover-manager/deps/pistache/prefix
+exec_prefix=/home/bmueller/Workspace/rover-manager/deps/pistache/prefix/bin
+libdir=/home/bmueller/Workspace/rover-manager/deps/pistache/prefix/lib/
+includedir=/home/bmueller/Workspace/rover-manager/deps/pistache/prefix/include/
+
+Name: libpistache
+URL: http://pistache.io/
+Description: An elegant C++ REST framework.
+Version: 0.0.002-git20200301
+Requires:
+Libs: -L'${libdir}/' -lpistache -lpthread -lssl -lcrypto
+Libs.private:
+Cflags: -I'${includedir}/'
+
