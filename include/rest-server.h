@@ -3,6 +3,9 @@
 //TODO: some of this could be moved into a cpp class, leaving the method stubs here. Do that at some point.
 
 #include "pistache/endpoint.h"
+#include "RobotMain.h"
+
+#include <atomic>
 
 namespace und::server
 {
@@ -14,6 +17,21 @@ namespace und::server
     Rest::Router router;
     Rest::Description desc;
     std::shared_ptr<Http::Endpoint> server;
+
+    std::atomic<int> currentPriority = 5;
+
+    RobotMain::instructions()
+
+    // TODO: write this to shutdown the REST server and clean everything up.
+    void shutdown()
+    {
+      
+    }
+
+    void resetPriority()
+    {
+      currentPriority = 5;
+    }
 
     void onRequest(const Http::Request& request, Http::ResponseWriter response)
     {
@@ -59,9 +77,25 @@ namespace und::server
       server.serve();
     }
 
-    void robotCommand(const Rest::Request&, Http::ResponseWriter response)
+    void robotCommand(const Rest::Request& request, Http::ResponseWriter response)
     {
-      
+      auto speed = request.param(":speed").as<std::string>();
+      auto direction = request.param(":direction").as<std::string>();
+      auto priority = request.param(":priority").as<std::string>();
+
+      if(priority == 0) // system command for shutdown
+	{
+	  shutdown();
+	}
+      else if(priority == currentPriority)
+	{
+	  RobotMain::drive(speed, direction);
+	}
+      else if(priority < currentPriority)
+	{
+	  currentPriority = priority;
+	  RobotMain::drive(speed, direction);
+	}
     }
     
   }
