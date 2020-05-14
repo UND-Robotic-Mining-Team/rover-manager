@@ -89,12 +89,12 @@ namespace und::server
 	}
       else if(priority == currentPriority)
 	{
-	  RobotMain::drive(speed, direction);
+	  RobotMain::drive({speed, direction});
 	}
       else if(priority < currentPriority)
 	{
 	  currentPriority = priority;
-	  RobotMain::drive(speed, direction);
+	  RobotMain::drive({speed, direction});
 	}
     }
     

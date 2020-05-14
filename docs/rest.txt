@@ -1,0 +1,5 @@
+The rest api is as defined in the following discord messages:
+by the way, I've gotten a basic definition for the REST api. As of right now, it's only set up to move the robot (not control the digging but that can be separate). Currently it's going to listen for GET requests of the format <ip>:<port>/controller/<speed>/<direction>/<priority>
+where speed is some integer value, direction is degrees, and priority is 1 to 5 (lower being higher priority)
+so like, the xbox will always be a priority 1 because humans should be able to override everything else
+an example command would be a GET command as "192.168.1.1:9080/controller/120/30/2"

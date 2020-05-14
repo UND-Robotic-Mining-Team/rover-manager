@@ -26,11 +26,11 @@ namespace RobotMain
 
   struct instructions
   {
-    int targetSpeed; // who knows what units they used...
-    int targetDir; // degrees?
+    int targetSpeed; // units to be decided
+    int targetDir; // degrees
   };
   
-  void drive(double fwd, double turn);
+  status drive(instructions);
   void sleepApp(int ms);
   void initMotors();
   
